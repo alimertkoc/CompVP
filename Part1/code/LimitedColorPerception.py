@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+from ClampRGBTransform import ClampRGBTransform
 from PIL import Image
 
 class LimitedColorPerceptionDataset(Dataset):
@@ -23,7 +24,9 @@ class LimitedColorPerceptionDataset(Dataset):
         # Set up transformation with the calculated saturation value
         self.transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.ColorJitter(saturation=linear_value, contrast=linear_value)
+            ClampRGBTransform(max_value=0.5, channel=0), # red channel
+            ClampRGBTransform(max_value=0.2, channel=1), # green channel
+            ClampRGBTransform(max_value=0.2, channel=2) # blue channel
         ])
                 
     def __getitem__(self, idx):
