@@ -1,7 +1,8 @@
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
-from ClampRGBTransform import ClampRGBTransform
+from RGBAndContrastTransform import RGBAndContrastTransform
+
 from PIL import Image
 
 class LimitedColorPerceptionDataset(Dataset):
@@ -24,9 +25,9 @@ class LimitedColorPerceptionDataset(Dataset):
         # Set up transformation with the calculated saturation value
         self.transform = transforms.Compose([
             transforms.ToTensor(),
-            ClampRGBTransform(max_value=0.5, channel=0), # red channel
-            ClampRGBTransform(max_value=0.2, channel=1), # green channel
-            ClampRGBTransform(max_value=0.2, channel=2) # blue channel
+            RGBAndContrastTransform(max_value=1, channel=0, contrast_factor=1.5), # red channel
+            RGBAndContrastTransform(max_value=1, channel=1, contrast_factor=1.5), # green channel
+            RGBAndContrastTransform(max_value=1, channel=2, contrast_factor=1.5) # blue channel
         ])
                 
     def __getitem__(self, idx):
