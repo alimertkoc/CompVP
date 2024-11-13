@@ -13,7 +13,6 @@ va_dataset = [VisualAcuityDataset(dataset, month_age=month_age) for month_age in
 lc_dataset = [LimitedColorPerceptionDataset(dataset, month_age=month_age) for month_age in month_ages]
 
 x = input("Property (lc = Color Perception | va = Visual Acuity): ").lower().strip()
-data_loaders = []
 
 # DataLoaders for each month for the selected property
 if x == "va":
