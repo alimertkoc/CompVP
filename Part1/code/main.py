@@ -4,10 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torchvision import transforms
 from torchvision.datasets import STL10
+import torch
 
 dataset = STL10('./data', split='train', download=True)
 # Create the VisualAcuityDataset with a specific month_age
-month_ages = list(range(0, 13))  # Create a list of ages from 0 to 12
+month_ages = list(range(0, 6))  # Create a list of ages from 0 to 12
 va_datasets = []
 lc_datasets=[]
 for month_age in month_ages:
@@ -30,7 +31,7 @@ elif x=='lc':
         data_loaders.append(data_loader)
 
 def show_images_in_sequence(data_loaders):
-    plt.figure(figsize=(25,25))
+    plt.figure(figsize=(20,20))
     for month_age,data_loader in zip(month_ages,data_loaders):
         for images,_ in data_loader:
             first_image=images[15].permute(1, 2, 0).numpy()*255
@@ -43,5 +44,5 @@ def show_images_in_sequence(data_loaders):
             break
         
     plt.show()
-print(data_loaders)
 show_images_in_sequence(data_loaders)
+
