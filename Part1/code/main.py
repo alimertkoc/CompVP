@@ -33,7 +33,7 @@ def show_images_in_sequence(data_loaders):
     plt.figure(figsize=(25,25))
     for month_age,data_loader in zip(month_ages,data_loaders):
         for images,_ in data_loader:
-            first_image=images[15].permute(1, 2, 0).numpy()*255
+            first_image=images[21].permute(1, 2, 0).numpy()*255
             first_image=first_image.astype(np.uint8)
             
             plt.subplot(1,len(data_loaders),month_age+1)

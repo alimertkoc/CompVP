@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 
 class VisualAcuityDataset(Dataset):
-    def __init__(self, dataset, month_age, max_age=12.0, max_sigma=5.0):
+    def __init__(self, dataset, month_age, max_age=5.0, max_sigma=5.0):
         """
         Initializes the dataset with flexible visual acuity.
 
