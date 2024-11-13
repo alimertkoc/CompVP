@@ -17,8 +17,6 @@ transform_VA = transforms.Compose([
     transforms.GaussianBlur(kernel_size=1, sigma=(0.1, 2.0))
 ])
 
-
-
 # Load dataset with and without transformations
 dataset_LC_with_transform = datasets.STL10(root=root_dir, transform=transform_LC)
 dataset_VA_with_transform = datasets.STL10(root=root_dir, transform=transform_VA)
@@ -26,10 +24,10 @@ dataset_without_transform = datasets.STL10(root=root_dir, transform=transforms.T
 
 # Create DataLoader instances
 batch_size = 100
-loader_with_transform_LC = DataLoader(dataset_LC_with_transform, batch_size=batch_size, shuffle=True)
-loader_with_transform_VA = DataLoader(dataset_VA_with_transform, batch_size=batch_size, shuffle=True)
+loader_with_transform_LC = DataLoader(dataset_LC_with_transform, batch_size=batch_size, shuffle=False)
+loader_with_transform_VA = DataLoader(dataset_VA_with_transform, batch_size=batch_size, shuffle=False)
 
-loader_without_transform = DataLoader(dataset_without_transform, batch_size=batch_size, shuffle=True)
+loader_without_transform = DataLoader(dataset_without_transform, batch_size=batch_size, shuffle=False)
 
 
 # Function to measure the time for loading a batch of images
