@@ -6,29 +6,25 @@ import matplotlib.pyplot as plt
 from torchvision.datasets import STL10
 
 dataset = STL10("./data", split="train", download=True)
-# Create the VisualAcuityDataset with a specific month_age
-month_ages = list(range(0, 7))  # Create a list of ages from 0 to 6
-va_datasets, lc_datasets = [], []  # Lists to hold datasets
-for month_age in month_ages:
-    va_datasets.append(VisualAcuityDataset(dataset, month_age=month_age))
-    lc_datasets.append(LimitedColorPerceptionDataset(dataset, month_age=month_age))
+month_ages = list(range(0, 7))
 
-x = input("Property:").lower().strip()
-data_loaders = []  # List to hold DataLoaders
-# Create DataLoaders for each month_age
+# Datasets for both properties (Visual Acuity and Limited Color Perception)
+va_dataset = [VisualAcuityDataset(dataset, month_age=month_age) for month_age in month_ages]
+lc_dataset = [LimitedColorPerceptionDataset(dataset, month_age=month_age) for month_age in month_ages]
+
+x = input("Property (lc = Color Perception | va = Visual Acuity): ").lower().strip()
+data_loaders = []
+
+# DataLoaders for each month for the selected property
 if x == "va":
-    for month_age in month_ages:
-        data_loader = DataLoader(va_datasets[month_age], batch_size=32, shuffle=False)
-        data_loaders.append(data_loader)
+    data_loaders = [DataLoader(va_dataset[month_age], batch_size=32, shuffle=False) for month_age in month_ages]
 elif x == "lc":
-    for month_age in month_ages:
-        data_loader = DataLoader(lc_datasets[month_age], batch_size=32, shuffle=False)
-        data_loaders.append(data_loader)
+    data_loaders = [DataLoader(lc_dataset[month_age], batch_size=32, shuffle=False) for month_age in month_ages]
 
 
 def show_images_in_sequence(data_loaders):
     plt.figure(figsize=(25, 25))
-    for month_age, data_loader in zip(month_ages, data_loaders):
+    for month_age, data_loader in enumerate(data_loaders):
         for images, _ in data_loader:
             first_image = images[15].permute(1, 2, 0).numpy() * 255
             first_image = first_image.astype(np.uint8)
@@ -42,5 +38,4 @@ def show_images_in_sequence(data_loaders):
     plt.show()
 
 
-print(data_loaders)
 show_images_in_sequence(data_loaders)
