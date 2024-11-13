@@ -1,9 +1,16 @@
 import torch
-from torchvision import transforms
 import torchvision.transforms.functional as F
 
+
 class RGBAndContrastTransform:
-    def __init__(self, min_value=0.0, max_value=1.0, channel=None, increment=0.0, contrast_factor=1.0):
+    def __init__(
+        self,
+        min_value=0.0,
+        max_value=1.0,
+        channel=None,
+        increment=0.0,
+        contrast_factor=1.0,
+    ):
         """
         Custom transform to clamp values of an image tensor.
 
@@ -24,8 +31,14 @@ class RGBAndContrastTransform:
         img_tensor = F.adjust_contrast(img_tensor, self.contrast_factor)
         if self.channel is not None:
             # Apply increment and clamp only to the specified channel
-            img_tensor[self.channel] = torch.clamp(img_tensor[self.channel] + self.increment, self.min_value, self.max_value)
+            img_tensor[self.channel] = torch.clamp(
+                img_tensor[self.channel] + self.increment,
+                self.min_value,
+                self.max_value,
+            )
         else:
             # Apply increment and clamp to all channels
-            img_tensor = torch.clamp(img_tensor + self.increment, self.min_value, self.max_value)
+            img_tensor = torch.clamp(
+                img_tensor + self.increment, self.min_value, self.max_value
+            )
         return img_tensor
