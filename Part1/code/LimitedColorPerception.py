@@ -19,16 +19,16 @@ class LimitedColorPerceptionDataset(Dataset):
         self.month_age = month_age
         self.max_age = max_age
 
-        self.settings = {
-            0: {'red': 0.1, 'green': 0.05, 'blue': 0.05, 'contrast': 0.1},
-            1: {'red': 0.3, 'green': 0.1, 'blue': 0.1, 'contrast': 0.2},
-            2: {'red': 0.5, 'green': 0.2, 'blue': 0.15, 'contrast': 0.3},
-            3: {'red': 0.7, 'green': 0.5, 'blue': 0.3, 'contrast': 0.4},
-            4: {'red': 0.8, 'green': 0.6, 'blue': 0.4, 'contrast': 0.6},
-            5: {'red': 0.9, 'green': 0.8, 'blue': 0.6, 'contrast': 0.7},
-            6: {'red': 1.0, 'green': 0.9, 'blue': 0.8, 'contrast': 0.8},
-            7: {'red': 1.0, 'green': 0.95, 'blue': 0.85, 'contrast': 0.8},
-            8: {'red': 1.0, 'green': 1.0, 'blue': 0.9, 'contrast': 0.9},
+        self.infant_development_stages = {
+            0: {'red': 0.8, 'green': 0.6, 'blue': 0.5, 'contrast': 0.6},
+            1: {'red': 0.84, 'green': 0.65, 'blue': 0.55, 'contrast': 0.65},
+            2: {'red': 0.88, 'green': 0.75, 'blue': 0.6, 'contrast': 0.7},
+            3: {'red': 0.92, 'green': 0.8, 'blue': 0.65, 'contrast': 0.75},
+            4: {'red': 0.95, 'green': 0.85, 'blue': 0.7, 'contrast': 0.8},
+            5: {'red': 0.98, 'green': 0.9, 'blue': 0.75, 'contrast': 0.85},
+            6: {'red': 1.0, 'green': 0.95, 'blue': 0.8, 'contrast': 0.9},
+            7: {'red': 1.0, 'green': 0.97, 'blue': 0.85, 'contrast': 0.95},
+            8: {'red': 1.0, 'green': 1.0, 'blue': 0.9, 'contrast': 1.0},
             9: {'red': 1.0, 'green': 1.0, 'blue': 1.0, 'contrast': 1.0},
             10: {'red': 1.0, 'green': 1.0, 'blue': 1.0, 'contrast': 1.0},
             11: {'red': 1.0, 'green': 1.0, 'blue': 1.0, 'contrast': 1.0},
@@ -38,9 +38,9 @@ class LimitedColorPerceptionDataset(Dataset):
         # Set up transformation with the calculated saturation value
         self.transform = transforms.Compose([
             transforms.ToTensor(),
-            RGBAndContrastTransform(max_value=self.settings[self.month_age]['red'], channel=0, contrast_factor=self.settings[self.month_age]['contrast']), # red channel
-            RGBAndContrastTransform(max_value=self.settings[self.month_age]['green'], channel=1, contrast_factor=self.settings[self.month_age]['contrast']), # green channel
-            RGBAndContrastTransform(max_value=self.settings[self.month_age]['blue'], channel=2, contrast_factor=self.settings[self.month_age]['contrast']) # blue channel
+            RGBAndContrastTransform(max_value=self.infant_development_stages[self.month_age]['red'], channel=0, contrast_factor=self.infant_development_stages[self.month_age]['contrast']), # red channel
+            RGBAndContrastTransform(max_value=self.infant_development_stages[self.month_age]['green'], channel=1, contrast_factor=self.infant_development_stages[self.month_age]['contrast']), # green channel
+            RGBAndContrastTransform(max_value=self.infant_development_stages[self.month_age]['blue'], channel=2, contrast_factor=self.infant_development_stages[self.month_age]['contrast']) # blue channel
         ])
                 
     def __getitem__(self, idx):
