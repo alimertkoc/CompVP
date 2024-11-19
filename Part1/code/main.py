@@ -4,8 +4,8 @@ from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 from torchvision.datasets import STL10
-from typing import List
 
+# STL10 dataset by Stanford University (https://cs.stanford.edu/~acoates/stl10/)
 dataset = STL10("./data", split="train", download=True)
 month_ages = list(range(0, 7))
 

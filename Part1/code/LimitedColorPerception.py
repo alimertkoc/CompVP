@@ -9,11 +9,12 @@ class LimitedColorPerceptionDataset(Dataset):
         """
         Args:
             month_age (int): The age in months of the person.
-            max_age (int): The age in months when full color perception is reached. Defaults to 6.
+            max_age (int): The age in months when full color perception is reached.
         """
         self.dataset = dataset
         self.month_age = month_age
         self.max_age = max_age
+        # Max age value is choosen as a result of trial and error
 
         # Inital color properties (red, green, blue, and contrast)
         red, green, blue, contrast = 0.8, 0.6, 0.4, 0.7

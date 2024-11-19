@@ -8,8 +8,8 @@ class VisualAcuityDataset(Dataset):
         """
         Args:
             month_age (float): The age in months of the person.
-            max_age (float, optional): The age in months when full visual acuity is reached. Defaults to 5.0.
-            max_sigma (float, optional): The maximum sigma value for Gaussian blur. Defaults to 5.0.
+            max_age (float, optional): The age in months when full visual acuity is reached.
+            max_sigma (float, optional): The maximum sigma value for Gaussian blur.
         """
         self.dataset = dataset
         self.month_age = month_age

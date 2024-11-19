@@ -33,7 +33,7 @@ loader_without_transform = DataLoader(dataset_without_transform, batch_size=batc
 
 
 # The total time for loading a batch of images
-# The function snippet is based on a medium article by `Benjamin Bodner` and PyTorch documentation
+# The measuring function is based on a medium article by `Benjamin Bodner` and PyTorch documentation
 def measure_loading_time(loader):
     start_time = time.time()
     # Load one batch
