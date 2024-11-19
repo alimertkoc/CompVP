@@ -5,10 +5,9 @@ from PIL import Image
 
 
 class LimitedColorPerceptionDataset(Dataset):
-    def __init__(self, dataset, month_age: int, max_age: int = 6) -> None:
+    def __init__(self, dataset, month_age, max_age=6) -> None:
         """
         Args:
-            dataset (Dataset): The dataset to be transformed.
             month_age (int): The age in months of the person.
             max_age (int): The age in months when full color perception is reached. Defaults to 6.
         """

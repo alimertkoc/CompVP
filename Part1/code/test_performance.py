@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 root_dir = "./data"
 
-# Sample transformation for Limited Color Perception (Random arguments)
+# Sample transformation for Limited Color Perception (Random argument values)
 transform_LCP = transforms.Compose(
     [
         transforms.ToTensor(),
@@ -15,7 +15,7 @@ transform_LCP = transforms.Compose(
     ]
 )
 
-# Sample transformation for Visual Acuity (Random arguments)
+# Sample transformation for Visual Acuity (Random argument values)
 transform_VA = transforms.Compose(
     [transforms.ToTensor(), transforms.GaussianBlur(kernel_size=1, sigma=(0.1, 2.0))]
 )
