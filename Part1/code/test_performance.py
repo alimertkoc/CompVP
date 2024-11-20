@@ -33,7 +33,6 @@ loader_without_transform = DataLoader(dataset_without_transform, batch_size=batc
 
 
 # The total time for loading a batch of images
-# The measuring function is based on a medium article by `Benjamin Bodner` and PyTorch documentation
 def measure_loading_time(loader):
     start_time = time.time()
     # Load one batch
@@ -42,14 +41,28 @@ def measure_loading_time(loader):
     end_time = time.time()
     return end_time - start_time
 
+times_with_transform_LCP = []
+times_with_transform_VA = []
+times_without_transform = []
 
-# Loading time with transformation
-time_with_transform_LCP = measure_loading_time(loader_with_transform_LCP)
-time_with_transform_VA = measure_loading_time(loader_with_transform_VA)
+for i in range(100):
+    # Loading time with transformation
+    time_with_transform_LCP = measure_loading_time(loader_with_transform_LCP)
+    time_with_transform_VA = measure_loading_time(loader_with_transform_VA)
+    # Loading time without transformation
+    time_without_transform = measure_loading_time(loader_without_transform)
+    
+    # Append the measured times to their respective lists
+    times_with_transform_LCP.append(time_with_transform_LCP)
+    times_with_transform_VA.append(time_with_transform_VA)
+    times_without_transform.append(time_without_transform)
 
-# Loading time without transformation
-time_without_transform = measure_loading_time(loader_without_transform)
+# Calculate average times
+avg_time_with_transform_LCP = sum(times_with_transform_LCP) / len(times_with_transform_LCP)
+avg_time_with_transform_VA = sum(times_with_transform_VA) / len(times_with_transform_VA)
+avg_time_without_transform = sum(times_without_transform) / len(times_without_transform)
 
-print(f"Loading time with transformations LC: {time_with_transform_LCP:.4f} seconds")
-print(f"Loading time with transformations VA: {time_with_transform_VA:.4f} seconds")
-print(f"Loading time without transformations: {time_without_transform:.4f} seconds")
+# Print results
+print(f"Average loading time with transformations (LCP): {avg_time_with_transform_LCP:.4f} seconds")
+print(f"Average loading time with transformations (VA): {avg_time_with_transform_VA:.4f} seconds")
+print(f"Average loading time without transformations: {avg_time_without_transform:.4f} seconds")
