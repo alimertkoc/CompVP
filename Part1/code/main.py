@@ -1,5 +1,5 @@
 from VisualAcuityDataset import VisualAcuityDataset
-from LimitedColorPerception import LimitedColorPerceptionDataset
+from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
 from torch.utils.data import DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
