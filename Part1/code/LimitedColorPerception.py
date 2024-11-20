@@ -17,20 +17,21 @@ class LimitedColorPerceptionDataset(Dataset):
         self.max_age = max_age
         # Max age value is choosen as a result of trial and error
 
-        # Inital color properties (red, green, blue, and contrast)
-        red, green, blue, contrast = 0.8, 0.6, 0.4, 0.7
-
-        # Color properties for each month age
-        # 4 is the number of steps to reach the maximum value (based on papers' results)
-        # Increment value (e.g., (1 - r) / 4) is choosen as if it's equal for each step
+        # Property values are choosen based on limited color perception paper and trial and error
         self.color_properties = {
-            i: {
-                "red": min(1, red + (1 - red) / 4 * i),
-                "green": min(1, green + (1 - green) / 4 * i),
-                "blue": min(1, blue + (1 - blue) / 4 * i),
-                "contrast": min(1, contrast + (1 - contrast) / 4 * i),
-            }
-            for i in range(self.max_age + 1)
+            0: {"red": 0.6, "green": 0.4, "blue": 0.56, "contrast": 0.75},
+            1: {"red": 0.66, "green": 0.46, "blue": 0.62, "contrast": 0.78},
+            2: {"red": 0.72, "green": 0.52, "blue": 0.68, "contrast": 0.81},
+            3: {"red": 0.78, "green": 0.58, "blue": 0.74, "contrast": 0.84},
+            4: {"red": 0.84, "green": 0.64, "blue": 0.8, "contrast": 0.87},
+            5: {"red": 0.9, "green": 0.7, "blue": 0.86, "contrast": 0.9},
+            6: {"red": 0.96, "green": 0.76, "blue": 0.92, "contrast": 0.93},
+            7: {"red": 0.97, "green": 0.82, "blue": 0.98, "contrast": 0.96},
+            8: {"red": 0.98, "green": 0.88, "blue": 0.97, "contrast": 0.99},
+            9: {"red": 0.99, "green": 0.94, "blue": 0.98, "contrast": 1.0},
+            10: {"red": 1.0, "green": 0.97, "blue": 0.99, "contrast": 1.0},
+            11: {"red": 1.0, "green": 1.0, "blue": 1.0, "contrast": 1.0},
+            12: {"red": 1.0, "green": 1.0, "blue": 1.0, "contrast": 1.0},
         }
 
         self.transform = transforms.Compose(
