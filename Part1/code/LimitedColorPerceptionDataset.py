@@ -26,7 +26,7 @@ class LimitedColorPerceptionDataset(Dataset):
             4: {"red": 0.84, "green": 0.64, "blue": 0.8, "contrast": 0.87},
             5: {"red": 0.9, "green": 0.7, "blue": 0.86, "contrast": 0.9},
             6: {"red": 0.96, "green": 0.76, "blue": 0.92, "contrast": 0.93},
-            7: {"red": 0.97, "green": 0.82, "blue": 0.98, "contrast": 0.96},
+            7: {"red": 0.97, "green": 0.82, "blue": 0.95, "contrast": 0.96},
             8: {"red": 0.98, "green": 0.88, "blue": 0.97, "contrast": 0.99},
             9: {"red": 0.99, "green": 0.94, "blue": 0.98, "contrast": 1.0},
             10: {"red": 1.0, "green": 0.97, "blue": 0.99, "contrast": 1.0},
