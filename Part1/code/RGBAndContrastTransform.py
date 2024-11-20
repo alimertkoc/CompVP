@@ -32,5 +32,5 @@ class RGBAndContrastTransform:
             )
         else:
             # Color property value change of all channels
-            img_tensor = torch.clamp(img_tensor, self.min_value, self.max_value)
+            img_tensor = torch.clamp(img_tensor, 0, self.max_value)
         return img_tensor
