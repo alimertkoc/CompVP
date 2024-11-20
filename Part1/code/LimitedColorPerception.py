@@ -8,6 +8,7 @@ class LimitedColorPerceptionDataset(Dataset):
     def __init__(self, dataset, month_age, max_age=6) -> None:
         """
         Args:
+            dataset: The dataset to be wrapped and modified.
             month_age (int): The age in months of the person.
             max_age (int): The age in months when full color perception is reached.
         """

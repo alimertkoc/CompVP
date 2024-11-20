@@ -7,6 +7,7 @@ class VisualAcuityDataset(Dataset):
     def __init__(self, dataset, month_age, max_age=5, max_sigma=5):
         """
         Args:
+            dataset: The dataset to be wrapped and modified.
             month_age (float): The age in months of the person.
             max_age (float, optional): The age in months when full visual acuity is reached.
             max_sigma (float, optional): The maximum sigma value for Gaussian blur.
