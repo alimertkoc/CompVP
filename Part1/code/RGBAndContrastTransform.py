@@ -13,7 +13,6 @@ class RGBAndContrastTransform:
         Transforms color property values (color channels and contrast) of an image tensor.
 
         Args:
-        - min_value (float): The minimum value to clamp the color property to.
         - max_value (float): The maximum value to clamp the color property to.
         - channel (int or None): The channel index to apply clamping to. (`None` for all channels)
         - contrast_factor (float): The factor to adjust the contrast of the image.
