@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
 from VisualAcuityDataset import VisualAcuityDataset
+from RGBAndContrastTransform import RGBAndContrastTransform
 import os
 import matplotlib.pyplot as plt
 
@@ -15,24 +16,30 @@ def get_transform(stage):
         # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=0),  # Limited color depth   
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.5, channel=0, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.47, channel=1, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.32, channel=2, contrast_factor=0.62),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 2:
         # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=3),  
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.78, channel=0, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.73, channel=1, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.89, channel=2, contrast_factor=0.7),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 3:
         # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=6),  
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.96, channel=0, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.89, channel=1, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.85, channel=2, contrast_factor=0.8),
             transforms.Normalize((0.5,), (0.5,))
         ])
 
@@ -49,7 +56,7 @@ def load_data(stage, batch_size=32):
 
 # Initialize ResNet34 model
 def get_model():
-    model = models.resnet34(pretrained=False)
+    model = models.resnet34(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 200)  # Tiny ImageNet has 200 classes
     return model
 
@@ -81,10 +88,10 @@ def visualize_curriculum():
     stages = [1, 2, 3]
     blur_levels = [0, 3, 6]  # Corresponding blur for each stage
     plt.figure(figsize=(8, 5))
-    plt.plot(stages, blur_levels, marker='o', label='Color Depth Progression')
+    plt.plot(stages, blur_levels, marker='o', label='Color Perception Progression')
     plt.title('Curriculum Visualization')
     plt.xlabel('Stage')
-    plt.ylabel('Blur Level (Month Age)')
+    plt.ylabel('Color Perception (Month Age)')
     plt.xticks(stages)
     plt.grid()
     plt.legend()
@@ -124,7 +131,7 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
                 running_corrects += torch.sum(preds == labels.data)
 
             epoch_loss = running_loss / len(dataloaders[phase].dataset)
-            epoch_acc = running_corrects.double() / len(dataloaders[phase].dataset)
+            epoch_acc = running_corrects.float() / len(dataloaders[phase].dataset)
 
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
@@ -134,12 +141,29 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
 
     return model
 
+import torch
+import numpy as np
+import pandas as pd
+import sklearn
+import matplotlib.pyplot as plt
+
+
+
 # Main execution
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"PyTorch version: {torch.__version__}")
 
-    stages = [1, 2, 3]
-    num_epochs_per_stage = 5
+    # Check PyTorch has access to MPS (Metal Performance Shader, Apple's GPU architecture)
+    print(f"Is MPS (Metal Performance Shader) built? {torch.backends.mps.is_built()}")
+    print(f"Is MPS available? {torch.backends.mps.is_available()}")
+
+    # Set the device      
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using device: {device}")
+    
+
+    stages = [1]
+    num_epochs_per_stage = 1
     batch_size = 32
 
     model = get_model().to(device)

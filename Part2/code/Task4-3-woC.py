@@ -84,7 +84,7 @@ def visualize_curriculum():
     stages = [1, 2, 3]
     blur_levels = [6, 3, 0]  # Corresponding blur for each stage
     plt.figure(figsize=(8, 5))
-    plt.plot(stages, blur_levels, marker='o', label='Blur Level (Month Age)')
+    plt.plot(stages, blur_levels, marker='o', label='Infant Vision Development (Month Age)')
     plt.gca().invert_yaxis()
     plt.title('Curriculum Visualization')
     plt.xlabel('Stage')

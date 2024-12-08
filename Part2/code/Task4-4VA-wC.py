@@ -79,7 +79,7 @@ def plot_learning_curves(history):
 # Visualize curriculum stages
 def visualize_curriculum():
     stages = [1, 2, 3]
-    blur_levels = [6, 3, 0]  # Corresponding blur for each stage
+    blur_levels = [0, 3, 6]  # Corresponding blur for each stage
     plt.figure(figsize=(8, 5))
     plt.plot(stages, blur_levels, marker='o', label='Blur Level')
     plt.gca().invert_yaxis()

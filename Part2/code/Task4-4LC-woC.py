@@ -5,7 +5,6 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
-from VisualAcuityDataset import VisualAcuityDataset
 import os
 import matplotlib.pyplot as plt
 
@@ -49,7 +48,7 @@ def load_data(stage, batch_size=32):
 
 # Initialize ResNet34 model
 def get_model():
-    model = models.resnet34(pretrained=False)
+    model = models.resnet34(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 200)  # Tiny ImageNet has 200 classes
     return model
 
@@ -81,11 +80,11 @@ def visualize_curriculum():
     stages = [1, 2, 3]
     blur_levels = [6, 3, 0]  # Corresponding blur for each stage
     plt.figure(figsize=(8, 5))
-    plt.plot(stages, blur_levels, marker='o', label='Blur Level')
+    plt.plot(stages, blur_levels, marker='o', label='Color Perception Progression')
     plt.gca().invert_yaxis()
     plt.title('Curriculum Visualization')
     plt.xlabel('Stage')
-    plt.ylabel('Blur Level (Month Age)')
+    plt.ylabel('Color Perception Level (Month Age)')
     plt.xticks(stages)
     plt.grid()
     plt.legend()

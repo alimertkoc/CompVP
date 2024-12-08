@@ -6,13 +6,16 @@ import torch.nn as nn
 import torch.optim as optim
 from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
 from VisualAcuityDataset import VisualAcuityDataset
+from TinyImageNetDataset import TinyImageNetDataset
 import os
 import matplotlib.pyplot as plt
 
 # Load Tiny ImageNet dataset
-def load_data(stage, batch_size=32):
-    train_dataset = datasets.ImageFolder(root='tiny-imagenet-200/train')
-    val_dataset = datasets.ImageFolder(root='tiny-imagenet-200/val')
+def load_data(batch_size=32):
+    dataset_path = './tiny-imagenet/data'
+
+    train_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/train-00000-of-00001-1359597a978bc4fa.parquet')
+    val_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/valid-00000-of-00001-70d52db3c749a935.parquet')
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
@@ -120,13 +123,11 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     history = {'train_loss': [], 'val_loss': [], 'train_acc': [], 'val_acc': []}
+    
+    train_loader, val_loader = load_data(batch_size)
+    dataloaders = {'train': train_loader, 'val': val_loader}
 
-    for stage in stages:
-        print(f'Training Stage {stage}')
-        train_loader, val_loader = load_data(stage, batch_size)
-        dataloaders = {'train': train_loader, 'val': val_loader}
-
-        model = train_model(model, dataloaders, criterion, optimizer, num_epochs_per_stage, device, stage, history)
+    model = train_model(model, dataloaders, criterion, optimizer, num_epochs_per_stage, device, history)
 
     # Create the networks directory if it doesn't exist
     os.makedirs('networks', exist_ok=True)

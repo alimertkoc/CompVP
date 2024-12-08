@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
 from VisualAcuityDataset import VisualAcuityDataset
+from TinyImageNetDataset import TinyImageNetDataset
 import os
 import matplotlib.pyplot as plt
 
@@ -15,35 +16,36 @@ def get_transform(stage):
         # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
+            transforms.ToTensor(),
             LimitedColorPerceptionDataset(month_age=0),  # Limited color depth
             VisualAcuityDataset(month_age=0),  # High blur
-            transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 2:
         # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
+            transforms.ToTensor(),
             LimitedColorPerceptionDataset(month_age=3),  
             VisualAcuityDataset(month_age=3),  # Medium blur
-            transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 3:
         # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
+            transforms.ToTensor(),
             LimitedColorPerceptionDataset(month_age=6),  
             VisualAcuityDataset(month_age=6),  # Minimal blur
-            transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
 
 # Load Tiny ImageNet dataset
 def load_data(stage, batch_size=32):
+    dataset_path = './tiny-imagenet/data'
     transform = get_transform(stage)
-    train_dataset = datasets.ImageFolder(root='tiny-imagenet-200/train', transform=transform)
-    val_dataset = datasets.ImageFolder(root='tiny-imagenet-200/val', transform=transform)
+    train_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/train-00000-of-00001-1359597a978bc4fa.parquet', transform=transform)
+    val_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/valid-00000-of-00001-70d52db3c749a935.parquet', transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
@@ -82,9 +84,9 @@ def plot_learning_curves(history):
 # Visualize curriculum stages
 def visualize_curriculum():
     stages = [1, 2, 3]
-    blur_levels = [6, 3, 0]  # Corresponding blur for each stage
+    blur_levels = [0, 3, 6]  # Corresponding blur for each stage
     plt.figure(figsize=(8, 5))
-    plt.plot(stages, blur_levels, marker='o', label='Blur Level (Month Age)')
+    plt.plot(stages, blur_levels, marker='o', label='Infant Vision Development (Month Age)')
     plt.gca().invert_yaxis()
     plt.title('Curriculum Visualization')
     plt.xlabel('Stage')
