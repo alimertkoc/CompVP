@@ -4,8 +4,6 @@ from torchvision import datasets, models
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
-from VisualAcuityDataset import VisualAcuityDataset
 import os
 import matplotlib.pyplot as plt
 
@@ -15,7 +13,7 @@ def get_transform(stage):
         # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            VisualAcuityDataset(month_age=0),  # Limited color depth
+            transforms.GaussianBlur(kernel_size=31, sigma=5.0),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
@@ -23,7 +21,7 @@ def get_transform(stage):
         # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            VisualAcuityDataset(month_age=3),
+            transforms.GaussianBlur(kernel_size=13, sigma=2.0),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
@@ -31,7 +29,7 @@ def get_transform(stage):
         # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            VisualAcuityDataset(month_age=6),
+            transforms.GaussianBlur(kernel_size=1, sigma=0.0),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
@@ -137,7 +135,16 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
 
 # Main execution
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"PyTorch version: {torch.__version__}")
+
+    # Check PyTorch has access to MPS (Metal Performance Shader, Apple's GPU architecture)
+    print(f"Is MPS (Metal Performance Shader) built? {torch.backends.mps.is_built()}")
+    print(f"Is MPS available? {torch.backends.mps.is_available()}")
+
+    # Set the device      
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using device: {device}")
+    
 
     stages = [1, 2, 3]
     num_epochs_per_stage = 5

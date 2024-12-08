@@ -4,8 +4,6 @@ from torchvision import datasets, models
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
-from VisualAcuityDataset import VisualAcuityDataset
 from RGBAndContrastTransform import RGBAndContrastTransform
 import os
 import matplotlib.pyplot as plt
@@ -140,13 +138,6 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
             history[phase + '_acc'].append(epoch_acc.item())
 
     return model
-
-import torch
-import numpy as np
-import pandas as pd
-import sklearn
-import matplotlib.pyplot as plt
-
 
 
 # Main execution

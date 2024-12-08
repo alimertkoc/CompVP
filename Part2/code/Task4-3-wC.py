@@ -4,48 +4,48 @@ from torchvision import datasets, models
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
-from VisualAcuityDataset import VisualAcuityDataset
-from TinyImageNetDataset import TinyImageNetDataset
+from RGBAndContrastTransform import RGBAndContrastTransform
 import os
 import matplotlib.pyplot as plt
 
 # Define transformation parameters for stages
 def get_transform(stage):
     if stage == 1:
-        # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            LimitedColorPerceptionDataset(month_age=0),  # Limited color depth
-            VisualAcuityDataset(month_age=0),  # High blur
+            transforms.GaussianBlur(kernel_size=31, sigma=5.0),
+            RGBAndContrastTransform(max_value=0.5, channel=0, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.47, channel=1, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.32, channel=2, contrast_factor=0.62),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 2:
-        # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            LimitedColorPerceptionDataset(month_age=3),  
-            VisualAcuityDataset(month_age=3),  # Medium blur
+            transforms.GaussianBlur(kernel_size=13, sigma=2.0),
+            RGBAndContrastTransform(max_value=0.78, channel=0, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.73, channel=1, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.89, channel=2, contrast_factor=0.7),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 3:
-        # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            LimitedColorPerceptionDataset(month_age=6),  
-            VisualAcuityDataset(month_age=6),  # Minimal blur
+            transforms.GaussianBlur(kernel_size=1, sigma=0.0),
+            RGBAndContrastTransform(max_value=0.96, channel=0, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.89, channel=1, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.85, channel=2, contrast_factor=0.8),
             transforms.Normalize((0.5,), (0.5,))
         ])
 
 # Load Tiny ImageNet dataset
 def load_data(stage, batch_size=32):
-    dataset_path = './tiny-imagenet/data'
     transform = get_transform(stage)
-    train_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/train-00000-of-00001-1359597a978bc4fa.parquet', transform=transform)
-    val_dataset = TinyImageNetDataset(parquet_file=f'{dataset_path}/valid-00000-of-00001-70d52db3c749a935.parquet', transform=transform)
+    train_dataset = datasets.ImageFolder(root='tiny-imagenet-200/train', transform=transform)
+    val_dataset = datasets.ImageFolder(root='tiny-imagenet-200/val', transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
@@ -142,7 +142,15 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
 
 # Main execution
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"PyTorch version: {torch.__version__}")
+
+    # Check PyTorch has access to MPS (Metal Performance Shader, Apple's GPU architecture)
+    print(f"Is MPS (Metal Performance Shader) built? {torch.backends.mps.is_built()}")
+    print(f"Is MPS available? {torch.backends.mps.is_available()}")
+
+    # Set the device      
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using device: {device}")
 
     stages = [1, 2, 3]
     num_epochs_per_stage = 5

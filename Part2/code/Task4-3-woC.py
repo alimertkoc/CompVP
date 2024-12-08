@@ -4,44 +4,46 @@ from torchvision import datasets, models
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
-from VisualAcuityDataset import VisualAcuityDataset
+from RGBAndContrastTransform import RGBAndContrastTransform
 import os
 import matplotlib.pyplot as plt
 
 # Define transformation parameters for stages
-def get_transform(stage, month_age):
+def get_transform(stage):
     if stage == 1:
-        # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=6),  # Limited color depth
-            VisualAcuityDataset(month_age=0),  # High blur
+            transforms.GaussianBlur(kernel_size=1, sigma=0.0),
+            RGBAndContrastTransform(max_value=0.96, channel=0, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.89, channel=1, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.85, channel=2, contrast_factor=0.8),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 2:
-        # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=3),  
-            VisualAcuityDataset(month_age=3),  # Medium blur
+            transforms.GaussianBlur(kernel_size=13, sigma=2.0),
+            RGBAndContrastTransform(max_value=0.78, channel=0, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.73, channel=1, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.89, channel=2, contrast_factor=0.7),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 3:
-        # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=0),  
-            VisualAcuityDataset(month_age=6),  # Minimal blur
+            transforms.GaussianBlur(kernel_size=31, sigma=5.0),
+            RGBAndContrastTransform(max_value=0.5, channel=0, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.47, channel=1, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.32, channel=2, contrast_factor=0.62),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))
         ])
 
 # Load Tiny ImageNet dataset
 def load_data(stage, batch_size=32):
-    transform = get_transform(stage, month_age=stage * 2)
+    transform = get_transform(stage)
     train_dataset = datasets.ImageFolder(root='tiny-imagenet-200/train', transform=transform)
     val_dataset = datasets.ImageFolder(root='tiny-imagenet-200/val', transform=transform)
 
@@ -52,7 +54,7 @@ def load_data(stage, batch_size=32):
 
 # Initialize ResNet34 model
 def get_model():
-    model = models.resnet34(pretrained=False)
+    model = models.resnet34(weights=None)
     model.fc = nn.Linear(model.fc.in_features, 200)  # Tiny ImageNet has 200 classes
     return model
 

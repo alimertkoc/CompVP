@@ -4,7 +4,7 @@ from torchvision import datasets, models
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
-from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
+from RGBAndContrastTransform import RGBAndContrastTransform
 import os
 import matplotlib.pyplot as plt
 
@@ -14,24 +14,30 @@ def get_transform(stage):
         # Stage 1: High blur, limited color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=6),  # Limited color depth
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.96, channel=0, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.89, channel=1, contrast_factor=0.8),
+            RGBAndContrastTransform(max_value=0.85, channel=2, contrast_factor=0.8),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 2:
         # Stage 2: Medium blur, improved color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=3),
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.78, channel=0, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.73, channel=1, contrast_factor=0.7),
+            RGBAndContrastTransform(max_value=0.89, channel=2, contrast_factor=0.7),
             transforms.Normalize((0.5,), (0.5,))
         ])
     elif stage == 3:
         # Stage 3: Minimal blur, full color perception
         return transforms.Compose([
             transforms.Resize((64, 64)),
-            LimitedColorPerceptionDataset(month_age=0),
             transforms.ToTensor(),
+            RGBAndContrastTransform(max_value=0.5, channel=0, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.47, channel=1, contrast_factor=0.62),
+            RGBAndContrastTransform(max_value=0.32, channel=2, contrast_factor=0.62),
             transforms.Normalize((0.5,), (0.5,))
         ])
 
@@ -136,7 +142,16 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, st
 
 # Main execution
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"PyTorch version: {torch.__version__}")
+
+    # Check PyTorch has access to MPS (Metal Performance Shader, Apple's GPU architecture)
+    print(f"Is MPS (Metal Performance Shader) built? {torch.backends.mps.is_built()}")
+    print(f"Is MPS available? {torch.backends.mps.is_available()}")
+
+    # Set the device      
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    print(f"Using device: {device}")
+    
 
     stages = [1, 2, 3]
     num_epochs_per_stage = 5

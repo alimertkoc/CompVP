@@ -2,3 +2,5 @@ Part1/code/data/
 Part1/code/__pycache__/
 Part2/code/__pycache__/
 .DS_Store
+Part2/tiny-imagenet-200
+Part2/networks
