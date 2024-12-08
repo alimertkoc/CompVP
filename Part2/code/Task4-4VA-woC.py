@@ -7,6 +7,7 @@ import torch.optim as optim
 from LimitedColorPerceptionDataset import LimitedColorPerceptionDataset
 from VisualAcuityDataset import VisualAcuityDataset
 import os
+import matplotlib.pyplot as plt
 
 # Define transformation parameters for stages
 def get_transform(stage):
@@ -53,9 +54,9 @@ def get_model():
     return model
 
 # Training function
-def train_model(model, dataloaders, criterion, optimizer, num_epochs, device):
+def train_model(model, dataloaders, criterion, optimizer, num_epochs, device, stage, history):
     for epoch in range(num_epochs):
-        print(f'Epoch {epoch + 1}/{num_epochs}')
+        print(f'Epoch {epoch + 1}/{num_epochs} (Stage {stage})')
         print('-' * 10)
 
         for phase in ['train', 'val']:
@@ -89,7 +90,50 @@ def train_model(model, dataloaders, criterion, optimizer, num_epochs, device):
 
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
+            # Store learning curves data
+            history[phase + '_loss'].append(epoch_loss)
+            history[phase + '_acc'].append(epoch_acc.item())
+
     return model
+
+# Plot learning curves
+def plot_learning_curves(history):
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['val_loss'], label='Validation Loss')
+    plt.title('Learning Curves - Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    plt.plot(history['train_acc'], label='Train Accuracy')
+    plt.plot(history['val_acc'], label='Validation Accuracy')
+    plt.title('Learning Curves - Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig('networks/44-va-woc-learning_curves.png')
+    plt.show()
+
+# Visualize curriculum stages
+def visualize_curriculum():
+    stages = [1, 2, 3]
+    blur_levels = [6, 3, 0]  # Corresponding blur for each stage
+    plt.figure(figsize=(8, 5))
+    plt.plot(stages, blur_levels, marker='o', label='Blur Level')
+    plt.gca().invert_yaxis()
+    plt.title('Curriculum Visualization')
+    plt.xlabel('Stage')
+    plt.ylabel('Blur Level (Month Age)')
+    plt.xticks(stages)
+    plt.grid()
+    plt.legend()
+    plt.savefig('networks/44-va-woc-curriculum_visualization.png')
+    plt.show()
 
 # Main execution
 def main():
@@ -103,18 +147,26 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+    history = {'train_loss': [], 'val_loss': [], 'train_acc': [], 'val_acc': []}
+
     for stage in stages:
         print(f'Training Stage {stage}')
         train_loader, val_loader = load_data(stage, batch_size)
         dataloaders = {'train': train_loader, 'val': val_loader}
 
-        model = train_model(model, dataloaders, criterion, optimizer, num_epochs_per_stage, device)
+        model = train_model(model, dataloaders, criterion, optimizer, num_epochs_per_stage, device, stage, history)
 
     # Create the networks directory if it doesn't exist
     os.makedirs('networks', exist_ok=True)
 
     # Save the model
     torch.save(model.state_dict(), 'networks/task4-4VA-woC.pth')
+
+    # Plot learning curves
+    plot_learning_curves(history)
+
+    # Visualize curriculum
+    visualize_curriculum()
 
 if __name__ == '__main__':
     main()
